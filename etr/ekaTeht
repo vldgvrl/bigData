@@ -1,0 +1,10 @@
+#!/bin/bash
+
+gawk '{ 
+	freq[NF]++
+}
+END { 
+	for (n in freq) 
+		print freq[n] " riviä, joilla on " n " saraketta"
+}
+' ad.data

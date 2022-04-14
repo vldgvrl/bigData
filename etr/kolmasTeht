@@ -1,0 +1,38 @@
+#!/bin/bash
+
+gawk ' 
+	#add titles from ad.names
+	NF == 2 {
+		printf $1 ";"
+	}
+
+	#skip considering second list until the title is added
+	NF != 2 && NR > FNR {
+
+		#Show only square images. Not show images with unknown size
+		if ($1==$2 && $1 != "?" && $2 != "?") {
+			freq[NF]++
+			
+			#Add break line after table hader
+			if(rowNum == 0) 
+				print ""
+				
+			#add auto number
+			printf ++rowNum ";"
+
+			#Exclude first three columns values (hight, width, ratio)
+			for (r=3; r<=NF-1; r++) {
+				printf $r ";" 
+			}
+		
+			#Add the last item without semicolon with line break
+			print $NF
+		}
+		
+	}
+	
+END { 
+	for (n in freq) 
+		print freq[n] " riviä, joilla on " n " saraketta"
+}
+' ad.names ad.data > data3.csv
