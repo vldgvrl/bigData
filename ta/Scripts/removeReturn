@@ -1,0 +1,11 @@
+#!/bin/bash
+
+gawk '
+{ 
+    #Remove carrier return for each row in a book
+    gsub("\r", "\n", $0)
+
+    #Add text to the text field
+    printf $0
+}
+' 

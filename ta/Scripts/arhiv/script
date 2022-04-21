@@ -1,0 +1,30 @@
+#!/bin/bash
+
+gawk '
+BEGIN {
+	print "@relation kirjojenKlusterointi"
+	print "@attribute id numeric"
+	print "@attribute text string"
+	print "@data"
+	gsub(/Freud/,"Freud====")
+
+}
+{ 
+	#End iteration to exclude license part of Gutenberg
+	if($1 == "***" && $2 == "END" && $3=="OF" && $4=="THE" && $5=="PROJECT" && $6== "GUTENBERG" && $7 == "EBOOK") {
+		exit
+	}else {
+
+		#Check iteration starts
+		if(startIteration) {
+			print ++id "\t" $0
+		}
+
+		#Start iteration after the header appeared
+		if($1 == "***" && $2 == "START" && $3=="OF" && $4=="THE" && $5=="PROJECT" && $6== "GUTENBERG" && $7 == "EBOOK") {
+			startIteration = !startIteration	
+		}
+	}
+
+}
+' 

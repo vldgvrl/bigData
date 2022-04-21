@@ -1,0 +1,41 @@
+#!/bin/bash
+
+gawk '
+BEGIN {
+	print "@relation kirjojenKlusterointi"
+	print "@attribute id numeric"
+	print "@attribute text string"
+	print "@data"
+}
+{ 
+	#End iteration to exclude license part of Gutenberg
+	if($1 == "***" && $2 == "END" && $3=="OF" && $4=="THE" && $5=="PROJECT" && $6== "GUTENBERG" && $7 == "EBOOK") {
+		exit
+	}else {
+
+		#Check iteration starts
+		if(startIteration) {
+				
+			if($0 == "\r")
+
+				#Remove empty rows
+				printf ""
+
+			else {
+				#Remove carrier return for each row in a book
+				gsub("\r", " ", $0)
+
+				#Print row
+				print ++i "\t" $0
+			}
+
+		}
+
+		#Start iteration after the header appeared
+		if($1 == "***" && $2 == "START" && $3=="OF" && $4=="THE" && $5=="PROJECT" && $6== "GUTENBERG" && $7 == "EBOOK") {
+			startIteration = !startIteration	
+		}
+	}
+
+}
+' 

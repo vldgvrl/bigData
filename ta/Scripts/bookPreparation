@@ -1,0 +1,42 @@
+#!/bin/bash
+
+gawk '
+BEGIN {
+	id = 1
+	printf id ",\""
+}
+{ 
+	#End iteration to exclude license part of Gutenberg
+	if($1 == "***" && $2 == "END" && $3=="OF" && ($4=="THE" || $4=="THIS" ) && $5=="PROJECT" && $6== "GUTENBERG" && $7 == "EBOOK") {
+		exit
+	}else {
+
+		#Check iteration starts
+		if(startIteration) {
+				
+			if($0 == "\r")
+
+				#Remove empty rows
+				printf ""
+
+			else {
+				#Remove carrier return for each row in a book
+				gsub("\r", " ", $0)
+
+				#Add text to the text field
+				printf $0
+			}
+
+		}
+
+		#Start iteration after the header appeared
+		if($1 == "***" && $2 == "START" && $3=="OF" && ($4=="THE"|| $4=="THIS" ) && $5=="PROJECT" && $6== "GUTENBERG" && $7 == "EBOOK") {
+			startIteration = !startIteration	
+		}
+	}
+
+}
+END {
+	print "\""
+}
+' 
